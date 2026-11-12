@@ -1,0 +1,123 @@
+[
+  {
+    "src": "images/fallback/table-mountain.jpg",
+    "placeName": "Table Mountain, Cape Town",
+    "lat": -33.96216,
+    "lon": 18.41352,
+    "countryCode": "ZA",
+    "title": "Table Mountain DanieVDM",
+    "artist": "Danie van der Merwe",
+    "license": "CC BY 2.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Table_Mountain_DanieVDM.jpg"
+  },
+  {
+    "src": "images/fallback/machu-picchu.jpg",
+    "placeName": "Machu Picchu",
+    "lat": -13.163333,
+    "lon": -72.545556,
+    "countryCode": "PE",
+    "title": "Machu Picchu, 2023 (012)",
+    "artist": "Draceane",
+    "license": "CC BY-SA 4.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Machu_Picchu,_2023_(012).jpg"
+  },
+  {
+    "src": "images/fallback/taj-mahal.jpg",
+    "placeName": "Taj Mahal, Agra",
+    "lat": 27.175,
+    "lon": 78.041944,
+    "countryCode": "IN",
+    "title": "Taj Mahal, Agra, India edit3",
+    "artist": "Yann, edited by King of Hearts and Jbarta",
+    "license": "CC BY-SA 3.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Taj_Mahal,_Agra,_India_edit3.jpg"
+  },
+  {
+    "src": "images/fallback/statue-of-liberty.jpg",
+    "placeName": "Liberty Island, New York",
+    "lat": 40.689209,
+    "lon": -74.044425,
+    "countryCode": "US",
+    "title": "Statue of Liberty and a sightseeing boat, Liberty Island, New York",
+    "artist": "Christian David",
+    "license": "CC BY-SA 4.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty_and_a_sightseeing_boat,_Liberty_Island,_New_York.jpg"
+  },
+  {
+    "src": "images/fallback/colosseum.jpg",
+    "placeName": "The Colosseum, Rome",
+    "lat": 41.890278,
+    "lon": 12.492222,
+    "countryCode": "IT",
+    "title": "Colosseo 2020",
+    "artist": "FeaturedPics",
+    "license": "CC BY-SA 4.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Colosseo_2020.jpg"
+  },
+  {
+    "src": "images/fallback/great-wall.jpg",
+    "placeName": "Great Wall at Jinshanling",
+    "lat": 40.431389,
+    "lon": 116.564444,
+    "countryCode": "CN",
+    "title": "The Great Wall of China at Jinshanling-edit",
+    "artist": "Severin.stalder",
+    "license": "CC BY-SA 3.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:The_Great_Wall_of_China_at_Jinshanling-edit.jpg"
+  },
+  {
+    "src": "images/fallback/giza.jpg",
+    "placeName": "Great Pyramid of Giza",
+    "lat": 29.97915,
+    "lon": 31.13422,
+    "countryCode": "EG",
+    "title": "Great Pyramid of Giza - Pyramid of Khufu",
+    "artist": "Douwe C. van der Zee",
+    "license": "CC BY-SA 4.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg"
+  },
+  {
+    "src": "images/fallback/mount-fuji.jpg",
+    "placeName": "Mount Fuji from Lake Shōji",
+    "lat": 35.360556,
+    "lon": 138.7275,
+    "countryCode": "JP",
+    "title": "Kodaki fuji frm shojinko refurb",
+    "artist": "名古屋太郎, edited by Hannes_24",
+    "license": "CC BY-SA 3.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Kodaki_fuji_frm_shojinko_refurb.jpg"
+  },
+  {
+    "src": "images/fallback/victoria-falls.jpg",
+    "placeName": "Victoria Falls",
+    "lat": -17.924778,
+    "lon": 25.858056,
+    "countryCode": "ZW",
+    "title": "Cataratas Victoria, Zambia-Zimbabue, 2018-07-27, DD 05",
+    "artist": "Diego Delso",
+    "license": "CC BY-SA 4.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Cataratas_Victoria,_Zambia-Zimbabue,_2018-07-27,_DD_05.jpg"
+  },
+  {
+    "src": "images/fallback/golden-gate.jpg",
+    "placeName": "Golden Gate Bridge, San Francisco",
+    "lat": 37.819722,
+    "lon": -122.478611,
+    "countryCode": "US",
+    "title": "GoldenGateBridge-001",
+    "artist": "Rich Niewiroski Jr.",
+    "license": "CC BY 2.5",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:GoldenGateBridge-001.jpg"
+  },
+  {
+    "src": "images/fallback/sydney-opera-house.jpg",
+    "placeName": "Sydney Opera House",
+    "lat": -33.857058,
+    "lon": 151.214897,
+    "countryCode": "AU",
+    "title": "Sydney Opera House Sails",
+    "artist": "Roybb95",
+    "license": "CC BY-SA 3.0",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Sydney_Opera_House_Sails.jpg"
+  }
+]

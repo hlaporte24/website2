@@ -1,0 +1,1233 @@
+/* ==========================================================================
+   Pin Drop — an antique atlas
+   Palette: cream paper, ink black, ocean blue, land green.
+   ========================================================================== */
+
+:root {
+  /* Paper */
+  --paper: #f2e9d0;
+  --paper-edge: #e7dab8;
+
+  /* Ink */
+  --ink: #1c1b18;
+  --ink-soft: rgb(28 27 24 / 0.72);
+
+  /* Sea */
+  --ocean: #2e5b6b;
+  --navy: #1b3a4b;
+  --sea-pale: #c4d6d0;
+
+  /* Land */
+  --green: #58704a;      /* pins, rules, decoration; text only on --paper (4.5:1) */
+  --green-ink: #4a6140;  /* green text on --paper-edge (4.9:1) */
+  --sage: #a9b98f;
+  --chart-sea: #acc2ba;  /* the sea colour the tile filter produces */
+
+  /* Type */
+  --font-body: "IM Fell English", Georgia, "Times New Roman", serif;
+  --font-caps: "IM Fell English SC", "IM Fell English", Georgia, serif;
+  --font-mono: "Courier Prime", "Courier New", Courier, monospace;
+
+  /* Layout */
+  --gutter: clamp(16px, 3vw, 40px);
+  --rule-gap: 4px;
+
+  /* Paper grain: fractal noise rendered once as an SVG data URI. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.10 0 0 0 0 0.09 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    var(--grain),
+    radial-gradient(ellipse at center, transparent 55%, rgb(150 120 60 / 0.16) 100%);
+  background-attachment: fixed;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--navy);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--ocean);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--navy);
+}
+
+:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2000;
+  padding: 8px 14px;
+  background: var(--navy);
+  color: var(--paper);
+  font-family: var(--font-caps);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* Small-caps labels: LATITUDE, ROUND, BEST VOYAGE */
+.label {
+  font-family: var(--font-caps);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+/* Survey-notebook numbers */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The double rule of a framed map plate: a thin line inside a thick one. */
+.plate,
+.chart__frame {
+  border: 1px solid var(--ink);
+  box-shadow:
+    0 0 0 var(--rule-gap) var(--paper-edge),
+    0 0 0 calc(var(--rule-gap) + 3px) var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons: printed labels
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.45em 1.4em 0.55em;
+  border: 1px solid var(--navy);
+  border-radius: 0;
+  background: var(--navy);
+  color: var(--paper);
+  font-family: var(--font-caps);
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 5px var(--navy);
+}
+
+.btn:active {
+  background: var(--ocean);
+}
+
+.btn:disabled {
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  background: transparent;
+  color: var(--ink-soft);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn--large {
+  min-width: 10rem;
+  font-size: 1.4rem;
+}
+
+/* --------------------------------------------------------------------------
+   Masthead (round screens)
+   -------------------------------------------------------------------------- */
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 14px var(--gutter);
+  border-bottom: 3px double var(--ink);
+}
+
+.masthead__brand {
+  color: var(--navy);
+  font-family: var(--font-caps);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+}
+
+.masthead__tally {
+  display: flex;
+  gap: clamp(1rem, 4vw, 2.5rem);
+  margin: 0;
+}
+
+.tally {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.tally__label {
+  font-family: var(--font-caps);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.tally__value {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1.3rem;
+}
+
+.tally__value--mono {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Error banner
+   -------------------------------------------------------------------------- */
+
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: 60rem;
+  margin: 16px auto 0;
+  padding: 10px 12px 10px 18px;
+  border: 1px solid var(--navy);
+  border-left-width: 6px;
+  background: var(--sea-pale);
+  color: var(--navy);
+}
+
+.banner__text {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.banner__close {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--navy);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.banner__close:hover {
+  border-color: var(--navy);
+}
+
+/* If the scripts never start, this notice appears after a few seconds.
+   app.js adds .js-ready to <html> as soon as it runs, which removes it. */
+.boot-warning {
+  max-height: 0;
+  overflow: hidden;
+  animation: boot-warning 0s 3s forwards;
+}
+
+.js-ready .boot-warning {
+  display: none;
+}
+
+.boot-warning__text {
+  display: block;
+  padding: 12px 18px;
+}
+
+.boot-warning code {
+  font-family: var(--font-mono);
+}
+
+@keyframes boot-warning {
+  to {
+    max-height: 20em;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Start screen
+   -------------------------------------------------------------------------- */
+
+.screen--start {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 48px var(--gutter);
+  overflow: hidden;
+}
+
+.meridians {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(1000px, 140vw);
+  height: auto;
+  color: var(--ocean);
+  opacity: 0.16;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.start {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  max-width: 40rem;
+  text-align: center;
+}
+
+.cartouche {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(560px, 100%);
+  aspect-ratio: 3 / 1;
+}
+
+.cartouche__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cartouche__tail {
+  fill: var(--sage);
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.cartouche__fold {
+  fill: var(--green);
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.cartouche__plaque {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+.cartouche__rule {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.cartouche__title {
+  position: relative;
+  /* Sits in the plaque, which is 60% of the art's height. */
+  font-size: clamp(2.6rem, 9vw, 4.4rem);
+  letter-spacing: 0.02em;
+  transform: translateY(2%);
+}
+
+.start__subtitle {
+  margin-top: -0.75rem;
+  color: var(--ocean);
+  font-family: var(--font-caps);
+  font-size: 1.25rem;
+  letter-spacing: 0.14em;
+}
+
+.steps {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.steps__item {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  align-items: baseline;
+}
+
+.steps__numeral {
+  color: var(--green);
+  font-family: var(--font-caps);
+  font-size: 1.2rem;
+  text-align: right;
+  padding-right: 0.9rem;
+}
+
+.start__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.toggle__input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--navy);
+  cursor: pointer;
+}
+
+.start__record {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ink-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Round screen: photographic plate beside the chart
+   -------------------------------------------------------------------------- */
+
+.screen--round {
+  padding: 36px var(--gutter) 40px;
+}
+
+/* Plate beside the chart; the country card slips in under the verdict on reveal. */
+.round {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "plate chart"
+    "plate dossier";
+  grid-template-rows: auto 1fr;
+  gap: calc(var(--gutter) + 8px);
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.chart {
+  grid-area: chart;
+}
+
+.dossier {
+  grid-area: dossier;
+}
+
+/* The plate: cream mat, thin black border, corner mounts, caption. */
+.plate {
+  grid-area: plate;
+  margin: 0;
+  padding: clamp(14px, 2vw, 24px);
+  background: var(--paper-edge);
+}
+
+.plate__frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--ink);
+  background: var(--sea-pale);
+  overflow: hidden;
+}
+
+/* Photo-corner mounts, drawn as four triangles over the print. */
+.plate__frame::after {
+  --mount: 30px;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Ink triangles with a cream paper edge, so they read on dark photos too. */
+  --corner: var(--ink) 0 47%, var(--paper-edge) 47% 53%, transparent 53%;
+  background:
+    linear-gradient(135deg, var(--corner)) top left / var(--mount) var(--mount) no-repeat,
+    linear-gradient(225deg, var(--corner)) top right / var(--mount) var(--mount) no-repeat,
+    linear-gradient(45deg, var(--corner)) bottom left / var(--mount) var(--mount) no-repeat,
+    linear-gradient(315deg, var(--corner)) bottom right / var(--mount) var(--mount) no-repeat;
+}
+
+.plate__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.plate__skeleton {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 10px, rgb(46 91 107 / 0.07) 10px 11px),
+    var(--sea-pale);
+}
+
+.plate__skeleton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgb(242 233 208 / 0.55) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: develop 1.8s ease-in-out infinite;
+}
+
+.plate__developing {
+  position: relative;
+  color: var(--navy);
+  font-family: var(--font-caps);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+}
+
+/* A photo "develops" from sepia to full tone as it appears. */
+.plate__photo {
+  animation: develop-photo 900ms ease-out both;
+}
+
+@keyframes develop-photo {
+  from {
+    opacity: 0;
+    filter: sepia(1) contrast(0.7) brightness(1.15);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+.plate__failure {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--paper-edge);
+  text-align: center;
+}
+
+.plate__failure-text {
+  color: var(--navy);
+  font-style: italic;
+  font-size: 1.2rem;
+}
+
+.plate__caption {
+  padding-top: 12px;
+  font-style: italic;
+  text-align: center;
+}
+
+.plate__number {
+  font-family: var(--font-caps);
+  font-style: normal;
+  letter-spacing: 0.06em;
+}
+
+@keyframes develop {
+  from { background-position: 120% 0; }
+  to   { background-position: -120% 0; }
+}
+
+/* The chart */
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.chart__frame {
+  position: relative;
+  display: flex;
+  aspect-ratio: 5 / 4;
+  min-height: 320px;
+  background: var(--paper-edge);
+}
+
+.chart__map {
+  flex: 1;
+  font-family: var(--font-body);
+}
+
+/* Compass rose in the chart's lower-left corner; it swings as the chart flies to the answer. */
+.compass {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  z-index: 500;
+  width: 76px;
+  height: 76px;
+  pointer-events: none;
+  transition: transform 1.4s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.compass.is-swinging {
+  transform: rotate(28deg);
+}
+
+.compass__ring {
+  fill: rgb(242 233 208 / 0.75);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.compass__ring--inner {
+  fill: none;
+  stroke-width: 0.75;
+}
+
+.compass__point {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.compass__point--minor {
+  fill: var(--sea-pale);
+}
+
+.compass__point--shade {
+  fill: var(--navy);
+  stroke: none;
+}
+
+.compass__north {
+  fill: var(--navy);
+  font-family: var(--font-caps);
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.chart__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.chart__readout {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+/* Keyboard alternative: pin a country's centre from a list. */
+.picker {
+  flex-basis: 100%;
+  display: grid;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgb(28 27 24 / 0.25);
+}
+
+.picker__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.picker__select {
+  flex: 1 1 14rem;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+}
+
+/* A secondary button: printed outline rather than solid ink. */
+.btn--quiet {
+  background: var(--paper);
+  color: var(--navy);
+}
+
+.btn--quiet:active {
+  background: var(--sea-pale);
+}
+
+/* ---------- The verdict ---------- */
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+}
+
+.verdict__figures {
+  display: flex;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  margin: 0;
+}
+
+.verdict__figure dd {
+  margin: 0;
+}
+
+.verdict__value {
+  display: block;
+  color: var(--navy);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.verdict__value--points {
+  color: var(--green);
+}
+
+.verdict__remark {
+  flex-basis: 100%;
+  order: 3;
+  font-style: italic;
+}
+
+/* ---------- Plate caption after the reveal ---------- */
+
+.plate__credit {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-style: normal;
+}
+
+.plate__credit a {
+  color: var(--ocean);
+}
+
+/* ---------- "Meet the country": a passport page ---------- */
+
+.dossier__loading,
+.dossier__note {
+  padding: 14px 18px;
+  border: 1px dashed var(--ink-soft);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.passport {
+  position: relative;
+  padding: 22px 24px 24px;
+  border: 1px solid var(--ink);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgb(46 91 107 / 0.12) 31px 32px),
+    var(--paper);
+  box-shadow:
+    0 0 0 var(--rule-gap) var(--paper-edge),
+    0 0 0 calc(var(--rule-gap) + 1px) var(--ink);
+  animation: settle 500ms ease-out both;
+}
+
+.passport__kicker {
+  color: var(--green-ink);
+  font-family: var(--font-caps);
+  letter-spacing: 0.12em;
+}
+
+.passport__name {
+  max-width: calc(100% - 130px);
+  margin: 4px 0 16px;
+  font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+}
+
+/* The flag sits in the corner like a postage stamp, perforated edge and all. */
+.passport__stamp {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  filter: drop-shadow(1px 2px 0 rgb(28 27 24 / 0.25));
+  transform: rotate(4deg);
+}
+
+.passport__flag {
+  display: block;
+  width: 108px;
+  height: 72px;
+  padding: 6px;
+  object-fit: cover;
+  /* Perforations: half-circles of the card's paper bitten out of a cream stamp border. */
+  background:
+    radial-gradient(circle, var(--paper) 2.8px, transparent 3.2px) -4.5px -4.5px / 9px 9px round,
+    #fbf6e8;
+}
+
+.passport__facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 18px;
+  margin: 0;
+}
+
+.passport__facts dt {
+  font-family: var(--font-caps);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.passport__facts dd {
+  margin: 0;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Pins and the route ---------- */
+
+.leaflet-overlay-pane .route {
+  stroke: var(--ink);
+}
+
+.leaflet-container.is-locked,
+.leaflet-container.is-locked .leaflet-interactive {
+  cursor: grab;
+}
+
+/* The answer's flag drops in once the route reaches it. */
+.pin--truth svg {
+  transform-origin: 20% 95%;
+  animation: plant 450ms cubic-bezier(0.3, 1.5, 0.6, 1) both;
+}
+
+@keyframes plant {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Leaflet: age the modern tiles into an old chart
+   -------------------------------------------------------------------------- */
+
+.leaflet-container {
+  background: var(--chart-sea);
+  font-family: var(--font-body);
+  cursor: crosshair;
+}
+
+.leaflet-container.leaflet-grab,
+.leaflet-container .leaflet-interactive {
+  cursor: crosshair;
+}
+
+/* #atlas-tint is an inline SVG colour matrix in index.html. */
+.leaflet-tile-pane {
+  filter: url("#atlas-tint");
+}
+
+.leaflet-overlay-pane .graticule {
+  stroke: var(--ink);
+}
+
+.leaflet-control-zoom.leaflet-bar {
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.leaflet-control-zoom.leaflet-bar a {
+  width: 34px;
+  height: 34px;
+  border-radius: 0;
+  border-bottom-color: var(--ink);
+  background: var(--paper);
+  color: var(--navy);
+  font-family: var(--font-mono);
+  line-height: 32px;
+}
+
+.leaflet-control-zoom.leaflet-bar a:hover,
+.leaflet-control-zoom.leaflet-bar a:focus-visible {
+  background: var(--sea-pale);
+}
+
+.leaflet-control-attribution.leaflet-control {
+  background: rgb(242 233 208 / 0.85);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+}
+
+.leaflet-control-attribution a {
+  color: var(--ocean);
+}
+
+/* Guess pin: an ink-filled survey point. */
+.pin {
+  background: none;
+  border: 0;
+}
+
+.pin svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.start__voyages {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   Summary: the ship's logbook
+   -------------------------------------------------------------------------- */
+
+.screen--summary {
+  padding: 40px var(--gutter) 48px;
+}
+
+.logbook {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  box-shadow:
+    0 0 0 var(--rule-gap) var(--paper-edge),
+    0 0 0 calc(var(--rule-gap) + 3px) var(--ink);
+  text-align: center;
+  animation: settle 500ms ease-out both;
+}
+
+.logbook__kicker {
+  color: var(--green);
+  font-family: var(--font-caps);
+  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+}
+
+.logbook__rank {
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+}
+
+.logbook__rank:focus {
+  outline: none;
+}
+
+.logbook__total {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+}
+
+.logbook__score {
+  color: var(--navy);
+  font-size: clamp(2.4rem, 7vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.logbook__of {
+  color: var(--ink-soft);
+}
+
+/* A personal best is announced on a small ribbon. */
+.logbook__best {
+  position: relative;
+  padding: 4px 28px 6px;
+  background: var(--green);
+  color: var(--paper);
+  font-family: var(--font-caps);
+  letter-spacing: 0.1em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%);
+}
+
+.logbook__note {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.ledger th {
+  padding: 6px 8px;
+  border-bottom: 2px solid var(--ink);
+  font-family: var(--font-caps);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.ledger td {
+  padding: 8px;
+  border-bottom: 1px solid rgb(28 27 24 / 0.2);
+}
+
+.ledger__num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+th.ledger__num {
+  font-family: var(--font-caps);
+}
+
+.ledger__plate {
+  font-family: var(--font-caps);
+  color: var(--navy);
+}
+
+.ledger__country {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.history {
+  width: 100%;
+  text-align: left;
+}
+
+.history__title {
+  margin-bottom: 8px;
+  font-family: var(--font-caps);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+}
+
+.history__list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dotted rgb(28 27 24 / 0.35);
+}
+
+.history__date {
+  color: var(--ink-soft);
+}
+
+.logbook__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Colophon
+   -------------------------------------------------------------------------- */
+
+.colophon {
+  padding: 18px var(--gutter) 24px;
+  border-top: 1px solid rgb(28 27 24 / 0.25);
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 800px) {
+  .round {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "plate"
+      "chart"
+      "dossier";
+    grid-template-rows: none;
+  }
+
+  .chart__frame {
+    aspect-ratio: auto;
+    height: clamp(300px, 60vh, 460px);
+  }
+
+  .compass {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 1.0625rem;
+  }
+
+  .masthead__brand {
+    font-size: 1.25rem;
+  }
+
+  .chart__controls > .btn,
+  .verdict .btn {
+    width: 100%;
+  }
+
+  .verdict .btn {
+    order: 4; /* after the remark on narrow screens */
+  }
+
+  .passport {
+    padding: 18px;
+  }
+
+  .passport__name {
+    max-width: calc(100% - 96px);
+  }
+
+  .passport__stamp {
+    top: 14px;
+    right: 12px;
+  }
+
+  .passport__flag {
+    width: 84px;
+    height: 56px;
+    padding: 5px;
+  }
+
+  .ledger th,
+  .ledger td {
+    padding: 6px 4px;
+  }
+
+  .plate__frame::after {
+    --mount: 22px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pin Drop — An Atlas of Unknown Places</title>
+  <meta name="description" content="A geography guessing game: study a photograph from somewhere on Earth, then pin where you think it was taken.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
+        integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"
+          integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg class="visually-hidden" aria-hidden="true" focusable="false">
+    <filter id="atlas-tint" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix"
+        values="0.778 0.272 -0.193 0 0.099
+                0.195 0.627 -0.002 0 0.112
+                0.008 0.188  0.542 0 0.095
+                0     0      0     1 0"/>
+    </filter>
+  </svg>
+
+  <header class="masthead" id="masthead" hidden>
+    <p class="masthead__brand">GeoLocator</p>
+    <dl class="masthead__tally">
+      <div class="tally">
+        <dt class="tally__label">Photo</dt>
+        <dd class="tally__value" id="tally-plate">I of V</dd>
+      </div>
+      <div class="tally">
+        <dt class="tally__label">Total</dt>
+        <dd class="tally__value tally__value--mono" id="tally-score">0</dd>
+      </div>
+    </dl>
+  </header>
+
+  <div class="banner" id="banner" role="status" aria-live="polite" hidden>
+    <p class="banner__text" id="banner-text"></p>
+    <button class="banner__close" id="banner-close" type="button" aria-label="Dismiss message">&times;</button>
+  </div>
+
+  <!-- Results are read out here; errors go to the banner above. -->
+  <p class="visually-hidden" id="announcer" aria-live="polite"></p>
+
+  <!-- Shown by CSS alone if the game's scripts never start (e.g. the page was opened as a file). -->
+  <div class="boot-warning">
+    <p class="banner boot-warning__text">
+      The game hasn't started. If the address bar begins with <code>file://</code>, open the folder in
+      VS Code and launch it with Live Server, then press Play again.
+    </p>
+  </div>
+
+  <main id="main">
+    <!-- Start screen -->
+    <section class="screen screen--start" id="screen-start" aria-labelledby="title">
+      <svg class="meridians" viewBox="0 0 800 800" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor">
+          <circle cx="400" cy="400" r="380" stroke-width="2"/>
+          <ellipse cx="400" cy="400" rx="320" ry="380"/>
+          <ellipse cx="400" cy="400" rx="230" ry="380"/>
+          <ellipse cx="400" cy="400" rx="120" ry="380"/>
+          <line x1="400" y1="20" x2="400" y2="780"/>
+          <line x1="20" y1="400" x2="780" y2="400" stroke-width="1.5"/>
+          <path d="M71 210 Q400 260 729 210"/>
+          <path d="M71 590 Q400 540 729 590"/>
+          <path d="M150 105 Q400 140 650 105"/>
+          <path d="M150 695 Q400 660 650 695"/>
+        </g>
+      </svg>
+
+      <div class="start">
+        <div class="cartouche">
+          <svg class="cartouche__art" viewBox="0 0 600 200" aria-hidden="true" focusable="false">
+            <path class="cartouche__tail" d="M20 70 H118 V150 H20 L48 110 Z"/>
+            <path class="cartouche__tail" d="M580 70 H482 V150 H580 L552 110 Z"/>
+            <path class="cartouche__fold" d="M90 150 L118 150 L118 166 Z"/>
+            <path class="cartouche__fold" d="M510 150 L482 150 L482 166 Z"/>
+            <path class="cartouche__plaque" d="M110 40 H490 A20 20 0 0 0 510 60 V140 A20 20 0 0 0 490 160 H110 A20 20 0 0 0 90 140 V60 A20 20 0 0 0 110 40 Z"/>
+            <path class="cartouche__rule" d="M117 49 H483 A27 27 0 0 0 501 67 V133 A27 27 0 0 0 483 151 H117 A27 27 0 0 0 99 133 V67 A27 27 0 0 0 117 49 Z"/>
+          </svg>
+          <h1 class="cartouche__title" id="title">GeoLocator</h1>
+        </div>
+
+        <ol class="steps">
+          <li class="steps__item">
+            <span class="steps__numeral" aria-hidden="true">I</span>
+            Study the photo. Photos will range from events, historical landmarks, and locations around the world.
+          </li>
+          <li class="steps__item">
+            <span class="steps__numeral" aria-hidden="true">II</span>
+            Pin on the map where you believe it was taken.
+          </li>
+          <li class="steps__item">
+            <span class="steps__numeral" aria-hidden="true">III</span>
+            The nearer your pin, the richer the reward: up to 5,000 points per photo.
+          </li>
+        </ol>
+
+        <form class="start__form" id="start-form">
+          <label class="toggle">
+            <input class="toggle__input" type="checkbox" id="near-me" name="near-me">
+            <span class="toggle__label">Start the map near me</span>
+          </label>
+          <button class="btn btn--large" type="submit">Play</button>
+        </form>
+
+        <p class="start__record">
+          <span class="label">Best voyage</span>
+          <span class="mono" id="best-score">—</span>
+          <span class="start__voyages" id="games-played"></span>
+        </p>
+      </div>
+    </section>
+
+    <!-- Round screen: guessing, then the reveal -->
+    <section class="screen screen--round" id="screen-round" aria-labelledby="round-heading" hidden>
+      <h2 class="visually-hidden" id="round-heading" tabindex="-1">Plate I: where was this photograph taken?</h2>
+
+      <div class="round">
+        <figure class="plate">
+          <div class="plate__frame" id="plate-frame">
+            <div class="plate__skeleton" id="plate-skeleton">
+              <p class="plate__developing">Developing photo</p>
+            </div>
+            <div class="plate__failure" id="plate-failure" hidden>
+              <p class="plate__failure-text">This photo could not be developed.</p>
+              <button class="btn" type="button" id="retry-photo">Try another photo</button>
+            </div>
+          </div>
+          <figcaption class="plate__caption">
+            <span id="plate-caption"><span class="plate__number">Plate I:</span> Unknown locality</span>
+            <span class="plate__credit" id="plate-credit" hidden></span>
+          </figcaption>
+        </figure>
+
+        <div class="chart">
+          <div class="chart__frame">
+            <div class="chart__map" id="map" role="region" aria-label="World map: click to place your guess"></div>
+            <svg class="compass" id="compass" viewBox="-50 -50 100 100" aria-hidden="true" focusable="false">
+              <circle class="compass__ring" r="34"/>
+              <circle class="compass__ring compass__ring--inner" r="29"/>
+              <path class="compass__point compass__point--minor" d="M0 -22 L5 0 L0 22 L-5 0 Z" transform="rotate(45)"/>
+              <path class="compass__point compass__point--minor" d="M0 -22 L5 0 L0 22 L-5 0 Z" transform="rotate(-45)"/>
+              <path class="compass__point" d="M0 -44 L7 0 L0 44 L-7 0 Z"/>
+              <path class="compass__point compass__point--shade" d="M0 -44 L7 0 L0 0 Z M0 44 L-7 0 L0 0 Z"/>
+              <path class="compass__point" d="M-44 0 L0 -7 L44 0 L0 7 Z"/>
+              <path class="compass__point compass__point--shade" d="M44 0 L0 7 L0 0 Z M-44 0 L0 -7 L0 0 Z"/>
+              <text class="compass__north" y="-36">N</text>
+            </svg>
+          </div>
+
+          <!-- Guessing controls -->
+          <div class="chart__controls" id="guess-controls">
+            <p class="chart__readout">
+              <span class="label">Your pin</span>
+              <output class="mono" id="pin-readout">Not yet placed</output>
+            </p>
+            <button class="btn" type="button" id="lock-in" disabled>Lock in guess</button>
+            <form class="picker" id="picker">
+              <label class="picker__label label" for="country-select">No mouse? Pin a country</label>
+              <div class="picker__row">
+                <select class="picker__select" id="country-select" required>
+                  <option value="">Choose a country…</option>
+                </select>
+                <button class="btn btn--quiet" type="submit">Place pin</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- The verdict after a guess -->
+          <div class="verdict" id="verdict" hidden>
+            <dl class="verdict__figures">
+              <div class="verdict__figure">
+                <dt class="label">Distance</dt>
+                <dd class="mono verdict__value" id="verdict-distance">—</dd>
+              </div>
+              <div class="verdict__figure">
+                <dt class="label">Points</dt>
+                <dd class="mono verdict__value verdict__value--points" id="verdict-points">0</dd>
+              </div>
+            </dl>
+            <p class="verdict__remark" id="verdict-remark"></p>
+            <button class="btn" type="button" id="next-round">Next photo</button>
+          </div>
+        </div>
+
+        <!-- "Meet the country" card, filled from Wikidata after each guess -->
+        <div class="dossier" id="dossier" hidden>
+          <p class="dossier__loading" id="dossier-loading">Consulting the gazetteer…</p>
+          <p class="dossier__note" id="dossier-note" hidden>Country notes couldn't be fetched from Wikidata this time.</p>
+          <article class="passport" id="passport" aria-labelledby="passport-name" hidden>
+            <p class="passport__kicker">Meet the country</p>
+            <h3 class="passport__name" id="passport-name">—</h3>
+            <div class="passport__stamp" id="passport-stamp"></div>
+            <dl class="passport__facts" id="passport-facts"></dl>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary screen -->
+    <section class="screen screen--summary" id="screen-summary" aria-labelledby="summary-rank" hidden>
+      <div class="logbook">
+        <p class="logbook__kicker">Voyage complete</p>
+        <h2 class="logbook__rank" id="summary-rank" tabindex="-1">—</h2>
+        <p class="logbook__total">
+          <span class="mono logbook__score" id="summary-score">0</span>
+          <span class="logbook__of">of <span class="mono">25,000</span> points</span>
+        </p>
+        <p class="logbook__best" id="summary-best" hidden>A new personal best</p>
+
+        <table class="ledger">
+          <caption class="visually-hidden">Points earned on each photo</caption>
+          <thead>
+            <tr>
+              <th scope="col">Photo</th>
+              <th scope="col">Locality</th>
+              <th scope="col" class="ledger__num">Distance</th>
+              <th scope="col" class="ledger__num">Points</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-rows"></tbody>
+        </table>
+
+        <p class="logbook__note" id="storage-note" hidden>This browser isn't letting the atlas keep records, so scores won't be saved between visits.</p>
+
+        <section class="history" id="history" aria-labelledby="history-title" hidden>
+          <h3 class="history__title" id="history-title">Recent voyages</h3>
+          <ol class="history__list" id="history-list"></ol>
+        </section>
+
+        <div class="logbook__actions">
+          <button class="btn btn--large" type="button" id="play-again">Play again</button>
+          <button class="btn btn--quiet" type="button" id="to-start">Title page</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <p>
+      Photographs from <a href="https://commons.wikimedia.org/">Wikimedia Commons</a>.
+      Country facts from <a href="https://www.wikidata.org/">Wikidata</a>.
+      Chart © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.
+    </p>
+  </footer>
+</body>
+</html>
